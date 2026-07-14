@@ -74,7 +74,7 @@ Each article's content is SHA-256 hashed. On every run, hashes are compared agai
 
 Deployed on [Railway](https://railway.app) with a daily cron trigger (`0 3 * * *` UTC).
 
-- **Job logs:** [Railway Dashboard → Deployments → Logs](#) _(link after deploy)_
+- **Job logs:** [Railway Deploy Logs](https://railway.com/project/38732383-82c5-485a-bc6a-f867972bf60c/service/275e03a4-7d81-4de1-bee6-e8507fd5f725?environmentId=88c811c7-c6d1-40ed-9439-fc4763f732b4&id=6d373bd1-7df5-4902-8a1b-e4009eb71c03#details)
 - **Docker:** `docker run --rm -e OPENAI_API_KEY=sk-... optibot-clone` exits 0 on success
 
 ---
