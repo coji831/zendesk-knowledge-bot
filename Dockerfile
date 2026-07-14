@@ -33,9 +33,5 @@ COPY articles/ ./articles/
 # scrape_state.json may not exist on first build — that's fine,
 # scraper.py handles the missing-file case (returns {})
 
-# ─── Runtime ─────────────────────────────────────────────────────
-# articles/ is the working data directory (mounted as volume for persistence)
-VOLUME ["/app/articles"]
-
 # Run the pipeline once and exit
 CMD ["python", "main.py"]
