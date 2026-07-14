@@ -1,9 +1,9 @@
 """
 Upload scraped Markdown files to OpenAI Vector Store + create OptiBot assistant.
 
-Flow: upload files → create/reuse vector store → attach (triggers chunking +
-embedding) → poll for completion → create/reuse assistant with system prompt.
-All via API — no UI drag-and-drop.
+Flow: upload files -> create/reuse vector store -> attach (triggers chunking +
+embedding) -> poll for completion -> create/reuse assistant with system prompt.
+All via API - no UI drag-and-drop.
 """
 
 import os
@@ -85,7 +85,7 @@ def attach_files_to_store(client: OpenAI, vector_store_id: str,
                           uploaded_files: list[tuple[str, str]]):
     """Attach files to vector store and poll until embedding completes.
     
-    OpenAI handles chunking → embedding → indexing asynchronously.
+    OpenAI handles chunking -> embedding -> indexing asynchronously.
     We poll every 2 seconds until the batch status is "completed" or "failed".
     """
     file_ids = [fid for fid, _ in uploaded_files]
@@ -117,7 +117,7 @@ def attach_files_to_store(client: OpenAI, vector_store_id: str,
 def create_or_get_assistant(client: OpenAI, vector_store_id: str) -> str:
     """Get existing OptiBot assistant by name, or create one.
     
-    Uses gpt-4o-mini (200K TPM on Tier 1) instead of gpt-4o (10K TPM) —
+    Uses gpt-4o-mini (200K TPM on Tier 1) instead of gpt-4o (10K TPM) -
     we hit the rate limit with 30 articles on first attempt.
     Temperature 0.3 keeps answers factual for support use.
     """
@@ -203,7 +203,7 @@ def test_assistant(client: OpenAI, assistant_id: str):
                         print("\n📎 Citations found:")
                         for ann in annotations:
                             if hasattr(ann, 'file_citation'):
-                                print(f"   → Cited file: {ann.file_citation.file_id}")
+                                print(f"   -> Cited file: {ann.file_citation.file_id}")
             break
     
     print("-" * 50)
@@ -215,7 +215,7 @@ def upload_delta_files(client: OpenAI, articles_dir: Path,
                        delta_filenames: list[str]) -> list:
     """Upload only the files that changed (added or updated).
     
-    The key optimization for the daily cron job — instead of re-uploading
+    The key optimization for the daily cron job - instead of re-uploading
     all 30+ articles every day, only the delta goes to OpenAI.
     """
     if not delta_filenames:
@@ -227,7 +227,7 @@ def upload_delta_files(client: OpenAI, articles_dir: Path,
     for filename in delta_filenames:
         filepath = articles_dir / filename
         if not filepath.exists():
-            print(f"  Missing: {filename} — skipping")
+            print(f"  Missing: {filename} - skipping")
             continue
         try:
             with open(filepath, "rb") as f:
@@ -252,7 +252,7 @@ def upload_to_vector_store(articles_dir: Path = ARTICLES_DIR) -> dict:
     batch = attach_files_to_store(client, vector_store_id, uploaded_files)
     assistant_id = create_or_get_assistant(client, vector_store_id)
     
-    print(f"\nUpload complete — {len(uploaded_files)} files")
+    print(f"\nUpload complete - {len(uploaded_files)} files")
     print(f"  Vector Store: {vector_store_id}")
     print(f"  Assistant:    {assistant_id}")
     
@@ -285,7 +285,7 @@ def upload_delta_to_vector_store(articles_dir: Path,
     batch = attach_files_to_store(client, vector_store_id, uploaded_files)
     assistant_id = create_or_get_assistant(client, vector_store_id)
     
-    print(f"\nDelta upload complete — {len(uploaded_files)} files")
+    print(f"\nDelta upload complete - {len(uploaded_files)} files")
     print(f"  Vector Store: {vector_store_id}")
     print(f"  Assistant:    {assistant_id}")
     

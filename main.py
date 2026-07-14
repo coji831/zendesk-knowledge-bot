@@ -1,11 +1,11 @@
 """
-OptiBot Mini-Clone — orchestrator.
+OptiBot Mini-Clone - orchestrator.
 
 Scrapes Zendesk articles, detects changes via SHA-256, and uploads only
 deltas to the OpenAI Vector Store. Three paths:
-  1. First run (no state) → upload everything
-  2. No changes → skip, exit early
-  3. Changes detected → upload only added + updated files
+  1. First run (no state) -> upload everything
+  2. No changes -> skip, exit early
+  3. Changes detected -> upload only added + updated files
 
 Usage: python main.py
 Requires: OPENAI_API_KEY in environment or .env file.
@@ -35,22 +35,22 @@ def main():
     updated = scrape_result["updated"]
     skipped = scrape_result["skipped"]
     
-    # ── Upload ──────────────────────────────────────────────────
+    # -- Upload --
     print("\n[2/2] Uploading to OpenAI...")
     
     try:
         if not old_state:
-            # Path 1: First run — no previous state, upload everything
-            print("  First run — uploading all articles")
+            # Path 1: First run - no previous state, upload everything
+            print("  First run - uploading all articles")
             result = upload_to_vector_store()
         elif added == 0 and updated == 0:
-            # Path 2: Nothing changed — skip
-            print("  No changes — skipping upload")
+            # Path 2: Nothing changed - skip
+            print("  No changes - skipping upload")
             print("=" * 60)
             print(f"  Done at {datetime.now().isoformat()}")
             return
         else:
-            # Path 3: Delta — only upload new + updated files
+            # Path 3: Delta - only upload new + updated files
             delta_filenames = []
             articles = scrape_result.get("articles", {})
             for aid, info in articles.items():
@@ -63,7 +63,7 @@ def main():
                 delta_filenames=delta_filenames,
             )
         
-        # ── Done ────────────────────────────────────────────────
+        # -- Done --
         print("\n" + "=" * 60)
         print("  Pipeline complete")
         print(f"  {datetime.now().isoformat()}")

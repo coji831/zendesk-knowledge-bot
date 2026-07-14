@@ -1,12 +1,12 @@
 """
-Scrape Zendesk Help Center → clean Markdown.
+Scrape Zendesk Help Center -> clean Markdown.
 
 Uses the Zendesk API to discover article URLs, then scrapes the actual HTML
 pages (not the API body) to prove we can handle messy web content. Strips
 nav, sidebar, ads, and other noise via CSS selectors, then converts to
 Markdown with preserved links, headings, and code blocks.
 
-Each article is SHA-256 hashed for delta detection — only changed articles
+Each article is SHA-256 hashed for delta detection - only changed articles
 get re-uploaded by the daily cron job.
 """
 
@@ -44,7 +44,7 @@ NOISE_SELECTORS = [
 
 
 def discover_articles(target_count: int = MIN_ARTICLES) -> list[dict]:
-    """Discover article URLs via the Zendesk API — discovery only, not content."""
+    """Discover article URLs via the Zendesk API - discovery only, not content."""
     articles = []
     url = f"{ARTICLES_API}?per_page={PER_PAGE}"
     
@@ -77,7 +77,7 @@ def scrape_article_html(html_url: str) -> str:
     """Fetch a messy HTML page and return clean Markdown.
     
     Finds the article content container, strips noise elements, and converts
-    to Markdown. The fallback chain (.article-body → article → main → body)
+    to Markdown. The fallback chain (.article-body -> article -> main -> body)
     makes this resilient to Zendesk template changes.
     """
     resp = requests.get(html_url, timeout=15)
@@ -111,7 +111,7 @@ def scrape_article_html(html_url: str) -> str:
         for element in body_soup.select(selector):
             element.decompose()
     
-    # Convert to Markdown — preserve links for citations, code blocks, headings
+    # Convert to Markdown - preserve links for citations, code blocks, headings
     h = html2text.HTML2Text()
     h.body_width = 0
     h.ignore_links = False
@@ -147,7 +147,7 @@ def validate_extraction(scraped_md: str, article_id: int) -> bool:
 
 
 def title_to_slug(title: str) -> str:
-    """Convert 'How to Add a YouTube Video' → 'how-to-add-a-youtube-video'."""
+    """Convert 'How to Add a YouTube Video' -> 'how-to-add-a-youtube-video'."""
     slug = title.lower()
     slug = re.sub(r'[^a-z0-9\s-]', '', slug)
     slug = re.sub(r'\s+', '-', slug)
@@ -159,7 +159,7 @@ def save_article(article_meta: dict, markdown_body: str, output_dir: Path) -> di
     """Save article as .md with YAML frontmatter and return its state entry.
     
     The returned dict (id, filename, hash, updated_at) is collected into
-    new_state for delta detection — comparing hashes between runs.
+    new_state for delta detection - comparing hashes between runs.
     """
     article_id = article_meta["id"]
     title = article_meta["title"]
@@ -203,7 +203,7 @@ def load_state() -> dict:
         try:
             return json.loads(STATE_FILE.read_text())
         except (json.JSONDecodeError, OSError) as e:
-            print(f"  State file corrupted ({e}) — starting fresh")
+            print(f"  State file corrupted ({e}) - starting fresh")
             return {}
     return {}
 
@@ -222,9 +222,9 @@ def detect_changes(new_state: dict, old_state: dict):
     """Compare article hashes to find what changed.
     
     Returns three lists: added, updated, skipped.
-    - ID not in old_state → added
-    - ID present but hash differs → updated
-    - ID present and hash matches → skipped
+    - ID not in old_state -> added
+    - ID present but hash differs -> updated
+    - ID present and hash matches -> skipped
     """
     added, updated, skipped = [], [], []
     
@@ -240,7 +240,7 @@ def detect_changes(new_state: dict, old_state: dict):
 
 
 def scrape(do_change_detection: bool = True) -> dict:
-    """Run the full ETL pipeline: discover → scrape → validate → save → diff.
+    """Run the full ETL pipeline: discover -> scrape -> validate -> save -> diff.
     
     Called by main.py. Returns counts: total_discovered, total_saved,
     added, updated, skipped, plus the new_state dict.
@@ -252,7 +252,7 @@ def scrape(do_change_detection: bool = True) -> dict:
     if len(articles) < MIN_ARTICLES:
         print(f"  Only {len(articles)} articles found (target: {MIN_ARTICLES})")
     
-    # Build new_state from scratch — failed articles get no entry,
+    # Build new_state from scratch - failed articles get no entry,
     # so the next successful scrape treats them as "added" (self-healing).
     new_state = {}
     saved, failed = 0, 0
@@ -263,7 +263,7 @@ def scrape(do_change_detection: bool = True) -> dict:
             markdown = scrape_article_html(article["html_url"])
             
             if not validate_extraction(markdown, article["id"]):
-                print(f"     Low word overlap with API — possible over-stripping")
+                print(f"     Low word overlap with API - possible over-stripping")
             
             state_entry = save_article(article, markdown, OUTPUT_DIR)
             new_state[str(state_entry["id"])] = state_entry
